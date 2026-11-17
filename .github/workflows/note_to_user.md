@@ -1,0 +1,1 @@
+This folder is where continuous integration techniques can be configured. This means that code can be automatically tested (based on certain triggers, like a commit) using instructions that are set in the files stored here. 

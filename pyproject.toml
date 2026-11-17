@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools", "wheel"] # setuptools and wheel are necessary for the build
+
+[project]
+name = "network-visualisation"
+version = "0.1"
+description = "A codebase to visualise and compare biological networks"
+authors = [
+    {name = "Katie Zoltan", email = "katherine.zoltan@bnc.ox.ac.uk", 
+    name = }
+]
+readme = "README.md"
+license-files = ["LICENSE"]
+dependencies = ["numpy", "matplotlib", "scipy", "networkx", "pandas"]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
+docs = [
+    "sphinx"
+]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.pytest.ini_options]
+testpaths = ["test/unit_tests"]
+pythonpath = ["."]
+
+[tool.coverage.run]
+source = ["src"]

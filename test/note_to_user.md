@@ -1,0 +1,1 @@
+Testing should be executed in this folder for as many functions in src as possible.
