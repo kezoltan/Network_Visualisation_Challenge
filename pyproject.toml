@@ -11,7 +11,7 @@ authors = [
 ]
 readme = "README.md"
 license-files = ["LICENSE"]
-dependencies = ["numpy", "matplotlib", "scipy", "networkx", "pandas"]
+dependencies = ["numpy", "matplotlib", "scipy", "pandas"]
 
 [project.optional-dependencies]
 dev = [
@@ -21,7 +21,7 @@ dev = [
     "ruff",
 ]
 docs = [
-    "sphinx"
+    "sphinx",
 ]
 
 [tool.ruff]
