@@ -2,7 +2,9 @@
 # Unit tests 
 # November 2026
 
-def trivial_test():
+# Note: Function names must begin test_ to be found
+
+def test_trivial():
     """
     Trivial test placeholder - delete
     """
