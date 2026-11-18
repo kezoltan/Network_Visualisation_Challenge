@@ -6,13 +6,12 @@ name = "biological-network-visualisation"
 version = "0.1"
 description = "A codebase to visualise and compare biological networks"
 authors = [
-    {name = "Katie Zoltan", email = "katherine.zoltan@bnc.ox.ac.uk", 
-    name = "Carl Jones", email = "carl.jones@dtc.ox.ac.uk",
-    name = "Melina Bell", email = "melina.bell@jesus.ox.ac.uk", 
-    name = "Laura Davidson", email = "laura.davidson@dtc.ox.ac.uk", 
-    name = "Ruby Croxton", email = "ruby.croxton@univ.ox.ac.uk",
-    name = "Xiang Li", email = "xiang.li@linacre.ox.ac.uk"
-    }
+    {name = "Katie Zoltan", email = "katherine.zoltan@bnc.ox.ac.uk"},
+    {name = "Carl Jones", email = "carl.jones@dtc.ox.ac.uk"},
+    {name = "Melina Bell", email = "melina.bell@jesus.ox.ac.uk"},
+    {name = "Laura Davidson", email = "laura.davidson@dtc.ox.ac.uk"},
+    {name = "Ruby Croxton", email = "ruby.croxton@univ.ox.ac.uk"},
+    {name = "Xiang Li", email = "xiang.li@linacre.ox.ac.uk"}
 ]
 readme = "README.md"
 license-files = ["LICENSE"]
