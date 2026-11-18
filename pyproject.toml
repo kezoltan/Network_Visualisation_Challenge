@@ -2,16 +2,21 @@
 requires = ["setuptools", "wheel"] # setuptools and wheel are necessary for the build
 
 [project]
-name = "network-visualisation"
+name = "biological-network-visualisation"
 version = "0.1"
 description = "A codebase to visualise and compare biological networks"
 authors = [
     {name = "Katie Zoltan", email = "katherine.zoltan@bnc.ox.ac.uk", 
-    name = }
+    name = "Carl Jones", email = "carl.jones@dtc.ox.ac.uk",
+    name = "Melina Bell", email = "melina.bell@jesus.ox.ac.uk", 
+    name = "Laura Davidson", email = "laura.davidson@dtc.ox.ac.uk", 
+    name = "Ruby Croxton", email = "ruby.croxton@univ.ox.ac.uk",
+    name = "Xiang Li", email = "xiang.li@linacre.ox.ac.uk"
+    }
 ]
 readme = "README.md"
 license-files = ["LICENSE"]
-dependencies = ["numpy", "matplotlib", "scipy", "pandas"]
+dependencies = ["numpy", "matplotlib", "scipy", "pandas", "networkx"]
 
 [project.optional-dependencies]
 dev = [
