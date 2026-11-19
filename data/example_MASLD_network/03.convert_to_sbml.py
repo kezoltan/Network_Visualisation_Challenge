@@ -2,15 +2,24 @@
 # November 2026
 # Step 3: Convert NetworkX to SBML
 # MASLD Network Visualisation Challenge
+#
+# Full-network export with original attributes
+# preserved as XML annotations.
+#
+# IMPORTANT:
+# This is a network exchange representation,
+# not a biologically validated simulation model.
 
 from pathlib import Path
+import json
+import html
 
 import networkx as nx
 import libsbml
 
 
 # --------------------------------------------------
-# 1. Load NetworkX network
+# 1. Load the NetworkX network
 # --------------------------------------------------
 
 def load_network():
@@ -18,7 +27,9 @@ def load_network():
 
     folder = Path(__file__).resolve().parent
 
-    graphml_file = folder / "MASLD_directed_network.graphml"
+    graphml_file = (
+        folder / "MASLD_directed_network.graphml"
+    )
 
     G = nx.read_graphml(graphml_file)
 
@@ -30,54 +41,50 @@ def load_network():
 
 
 # --------------------------------------------------
-# 2. Select interactions
+# 2. Preserve original attributes
 # --------------------------------------------------
 
-def select_interactions(G, limit=100):
-    """Select OmniPath directed stimulation interactions."""
+def add_metadata(element, metadata):
+    """Store original graph data as an XML annotation."""
 
-    selected = []
+    payload = json.dumps(
+        metadata,
+        ensure_ascii=True,
+        default=str
+    )
 
-    for source, target, attributes in G.edges(data=True):
+    annotation = (
+        '<masld:metadata '
+        'xmlns:masld="https://example.org/masld/metadata">'
+        + html.escape(payload, quote=False)
+        + '</masld:metadata>'
+    )
 
-        interaction = str(
-            attributes.get("OmniPath", "NA")
+    result = element.appendAnnotation(annotation)
+
+    if result != libsbml.LIBSBML_OPERATION_SUCCESS:
+        raise RuntimeError(
+            "Failed to add metadata annotation"
         )
 
-        labels = [
-            label.strip()
-            for label in interaction.split("&")
-        ]
-
-        if "directed_stimulation" in labels:
-            selected.append((source, target))
-
-        if len(selected) >= limit:
-            break
-
-    print("Selected interactions:", len(selected))
-
-    return selected
-
 
 # --------------------------------------------------
-# 3. Create SBML qualitative model
+# 3. Convert NetworkX into SBML qual
 # --------------------------------------------------
 
-def create_sbml_qual(G, interactions):
-    """Create an SBML Level 3 qualitative model."""
+def convert_to_sbml(G):
+    """Convert all nodes and edges into SBML qual."""
 
-    # Create SBML namespaces
+    # Create SBML Level 3 namespaces
     namespaces = libsbml.SBMLNamespaces(3, 1)
     namespaces.addPackageNamespace("qual", 1)
 
     document = libsbml.SBMLDocument(namespaces)
-
     document.setPackageRequired("qual", True)
 
     # Create model
     model = document.createModel()
-    model.setId("MASLD_qual_model")
+    model.setId("MASLD_full_network")
 
     # Create compartment
     compartment = model.createCompartment()
@@ -94,106 +101,173 @@ def create_sbml_qual(G, interactions):
             "SBML qual package is unavailable"
         )
 
+    node_ids = {}
+
     # ----------------------------------------------
-    # Create qualitative species
+    # Create species for every node
     # ----------------------------------------------
 
-    nodes = set()
+    for index, (node, attributes) in enumerate(
+        G.nodes(data=True)
+    ):
 
-    for source, target in interactions:
-        nodes.add(source)
-        nodes.add(target)
-
-    for node in sorted(nodes):
+        sbml_id = f"species_{index}"
+        node_ids[node] = sbml_id
 
         species = qual.createQualitativeSpecies()
 
-        species.setId(str(node))
+        species.setId(sbml_id)
         species.setName(
-            str(G.nodes[node].get("name", node))
+            str(attributes.get("name", node))
         )
         species.setCompartment("cell")
         species.setConstant(False)
         species.setMaxLevel(1)
 
-    print("Qualitative species created:", len(nodes))
+        # Preserve node ID and attributes
+        add_metadata(
+            species,
+            {
+                "original_node_id": str(node),
+                "attributes": attributes
+            }
+        )
+
+    print("SBML species created:", len(node_ids))
 
     # ----------------------------------------------
-    # Create qualitative transitions
+    # Create transitions for every edge
     # ----------------------------------------------
 
-    for index, (source, target) in enumerate(interactions):
+    for index, (source, target, attributes) in enumerate(
+        G.edges(data=True)
+    ):
 
         transition = qual.createTransition()
-        transition.setId(f"transition_{index}")
+        transition.setId(f"interaction_{index}")
 
         # Input species
         input_node = transition.createInput()
         input_node.setId(f"input_{index}")
-        input_node.setQualitativeSpecies(str(source))
+        input_node.setQualitativeSpecies(
+            node_ids[source]
+        )
 
         input_node.setTransitionEffect(
             libsbml.INPUT_TRANSITION_EFFECT_NONE
         )
 
+        # Unknown sign avoids assuming activation
         input_node.setSign(
-            libsbml.INPUT_SIGN_POSITIVE
+            libsbml.INPUT_SIGN_UNKNOWN
         )
-
-        input_node.setThresholdLevel(1)
 
         # Output species
         output_node = transition.createOutput()
         output_node.setId(f"output_{index}")
-        output_node.setQualitativeSpecies(str(target))
+        output_node.setQualitativeSpecies(
+            node_ids[target]
+        )
 
         output_node.setTransitionEffect(
             libsbml.OUTPUT_TRANSITION_EFFECT_ASSIGNMENT_LEVEL
         )
 
-        # Default term: target inactive
+        # ------------------------------------------
+        # Required SBML qualitative function terms
+        # ------------------------------------------
+
+        # A default term is required by SBML qual.
+        # This assigns level 0 to the target.
+        #
+        # It is a technical modelling assumption,
+        # NOT a verified biological mechanism.
+
         default_term = transition.createDefaultTerm()
         default_term.setResultLevel(0)
 
-        # Function term: target active
-        function_term = transition.createFunctionTerm()
-        function_term.setResultLevel(1)
+        # ------------------------------------------
+        # Preserve original edge information
+        # ------------------------------------------
 
-        math = libsbml.parseL3Formula(
-            f"geq({source}, 1)"
+        add_metadata(
+            transition,
+            {
+                "source": str(source),
+                "target": str(target),
+                "attributes": attributes
+            }
         )
 
-        if math is None:
-            raise ValueError(
-                f"Could not create math for {source}"
+        # Progress updates
+        if (index + 1) % 10000 == 0:
+            print(
+                f"Processed {index + 1} edges..."
             )
 
-        function_term.setMath(math)
-
-    print("Transitions created:", len(interactions))
+    print(
+        "SBML transitions created:",
+        qual.getNumTransitions()
+    )
 
     return document
 
 
 # --------------------------------------------------
-# 4. Validate and save SBML
+# 4. Display validation errors
+# --------------------------------------------------
+
+def show_validation_errors(document, maximum=5):
+    """Show only the first few validation errors."""
+
+    print(
+        "\nTotal validation diagnostics:",
+        document.getNumErrors()
+    )
+
+    shown = 0
+
+    for index in range(document.getNumErrors()):
+
+        error = document.getError(index)
+
+        if error.getSeverity() < libsbml.LIBSBML_SEV_ERROR:
+            continue
+
+        shown += 1
+
+        print(f"\nError {shown}")
+        print("Error code:", error.getErrorId())
+        print("Message:", error.getMessage())
+
+        if shown >= maximum:
+            break
+
+
+# --------------------------------------------------
+# 5. Validate and save SBML
 # --------------------------------------------------
 
 def save_sbml(document):
-    """Validate and save the SBML document."""
+    """Validate and export the SBML document."""
 
-    # Find the main project directory
-    project_folder = Path(__file__).resolve().parents[2]
+    project_folder = (
+        Path(__file__).resolve().parents[2]
+    )
 
-    # Create results directory
     output_folder = project_folder / "results"
-    output_folder.mkdir(parents=True, exist_ok=True)
 
-    output_file = output_folder / "MASLD_qual.xml"
+    output_folder.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    output_file = (
+        output_folder / "MASLD_full_network.xml"
+    )
 
     print("\nValidating SBML...")
 
-    # Check SBML consistency
     document.checkConsistency()
 
     error_count = document.getNumErrors(
@@ -201,62 +275,110 @@ def save_sbml(document):
     )
 
     if error_count > 0:
-        document.printErrors()
+
+        show_validation_errors(
+            document,
+            maximum=5
+        )
+
         raise ValueError(
-            f"SBML validation failed with {error_count} errors"
+            f"SBML validation failed: "
+            f"{error_count} errors"
         )
 
     print("SBML validation passed!")
 
-    # Save SBML
+    # ----------------------------------------------
+    # Write SBML file
+    # ----------------------------------------------
+
     print("\nSaving SBML...")
     print("Output path:", output_file)
 
-    result = libsbml.writeSBMLToFile(
+    success = libsbml.writeSBMLToFile(
         document,
         str(output_file)
     )
 
-    # writeSBMLToFile returns True on success
-    if not result:
+    if not success:
         raise IOError(
             f"Failed to save SBML file: {output_file}"
         )
 
-    print("\nSBML conversion successful!")
-    print("Saved to:", output_file)
+    print("SBML saved successfully!")
 
     return output_file
 
 
 # --------------------------------------------------
-# 5. Main pipeline
+# 6. Verify exported SBML
+# --------------------------------------------------
+
+def verify_sbml(output_file, expected_nodes, expected_edges):
+    """Read the SBML file and verify counts."""
+
+    print("\nVerifying exported SBML...")
+
+    document = libsbml.readSBMLFromFile(
+        str(output_file)
+    )
+
+    model = document.getModel()
+
+    if model is None:
+        raise ValueError(
+            "Could not read the exported SBML model"
+        )
+
+    qual = model.getPlugin("qual")
+
+    if qual is None:
+        raise ValueError(
+            "Exported model has no qual package"
+        )
+
+    species_count = qual.getNumQualitativeSpecies()
+    transition_count = qual.getNumTransitions()
+
+    print("Exported species:", species_count)
+    print("Exported transitions:", transition_count)
+
+    if species_count != expected_nodes:
+        raise ValueError(
+            "Species count does not match original network"
+        )
+
+    if transition_count != expected_edges:
+        raise ValueError(
+            "Transition count does not match original network"
+        )
+
+    print("Node and edge counts verified!")
+
+
+# --------------------------------------------------
+# 7. Main pipeline
 # --------------------------------------------------
 
 def main():
 
-    # Step 1: Load NetworkX graph
+    # Load original GraphML
     G = load_network()
 
-    # Step 2: Select interactions
-    interactions = select_interactions(
-        G,
-        limit=100
+    # Convert the full network
+    document = convert_to_sbml(G)
+
+    # Validate and save
+    output_file = save_sbml(document)
+
+    # Verify exported counts
+    verify_sbml(
+        output_file,
+        expected_nodes=G.number_of_nodes(),
+        expected_edges=G.number_of_edges()
     )
 
-    if not interactions:
-        raise ValueError(
-            "No suitable interactions found"
-        )
-
-    # Step 3: Convert to SBML
-    document = create_sbml_qual(
-        G,
-        interactions
-    )
-
-    # Step 4: Validate and save
-    save_sbml(document)
+    print("\nFull-network export completed!")
 
 
 if __name__ == "__main__":
