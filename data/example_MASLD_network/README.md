@@ -9,4 +9,4 @@ https://github.com/kamzolas/MASLD---Continuous-trajectory-approach/tree/main
 
 The data stored here is the output obtained by running all 8 files in step 6 of the above repository. 
 
-The additional files perform the required networkx conversion from an RData format, which is required for input into the main program.
+The additional files perform the required conversion to networkx compatible format (e.g. GraphML) from an RData format, which is required for input into the main program.
