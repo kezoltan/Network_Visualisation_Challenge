@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d20" for="edge" attr.name="lapl_norm_weight" attr.type="double" />
+  <key id="d19" for="edge" attr.name="lapl_norm" attr.type="double" />
+  <key id="d18" for="edge" attr.name="weight" attr.type="double" />
+  <key id="d17" for="edge" attr.name="OmniPath" attr.type="string" />
+  <key id="d16" for="edge" attr.name="Reactome" attr.type="string" />
+  <key id="d15" for="edge" attr.name="HumanCyc" attr.type="string" />
+  <key id="d14" for="edge" attr.name="ReconX" attr.type="string" />
+  <key id="d13" for="edge" attr.name="KEGG" attr.type="string" />
+  <key id="d12" for="node" attr.name="name" attr.type="string" />
+  <key id="d11" for="node" attr.name="downstream" attr.type="boolean" />
+  <key id="d10" for="node" attr.name="downstream_diff_exp" attr.type="boolean" />
+  <key id="d9" for="node" attr.name="downstream_Ballooning" attr.type="boolean" />
+  <key id="d8" for="node" attr.name="downstream_Steatosis" attr.type="boolean" />
+  <key id="d7" for="node" attr.name="downstream_NAS" attr.type="boolean" />
+  <key id="d6" for="node" attr.name="downstream_Fibrosis" attr.type="boolean" />
+  <key id="d5" for="node" attr.name="upstream" attr.type="boolean" />
+  <key id="d4" for="node" attr.name="upstream_diff_exp" attr.type="boolean" />
+  <key id="d3" for="node" attr.name="upstream_Ballooning" attr.type="boolean" />
+  <key id="d2" for="node" attr.name="upstream_Steatosis" attr.type="boolean" />
+  <key id="d1" for="node" attr.name="upstream_NAS" attr.type="boolean" />
+  <key id="d0" for="node" attr.name="upstream_Fibrosis" attr.type="boolean" />
+  <graph edgedefault="directed">
+    <node id="n2979">
+      <data key="d0">False</data>
+      <data key="d1">False</data>
+      <data key="d2">False</data>
+      <data key="d3">False</data>
+      <data key="d4">False</data>
+      <data key="d5">False</data>
+      <data key="d6">True</data>
+      <data key="d7">True</data>
+      <data key="d8">False</data>
+      <data key="d9">True</data>
+      <data key="d10">True</data>
+      <data key="d11">True</data>
+      <data key="d12">MSN</data>
+    </node>
+    <node id="n5700">
+      <data key="d0">False</data>
+      <data key="d1">False</data>
+      <data key="d2">False</data>
+      <data key="d3">False</data>
+      <data key="d4">False</data>
+      <data key="d5">False</data>
+      <data key="d6">False</data>
+      <data key="d7">True</data>
+      <data key="d8">False</data>
+      <data key="d9">False</data>
+      <data key="d10">True</data>
+      <data key="d11">True</data>
+      <data key="d12">ITGAD</data>
+    </node>
+    <node id="n0">
+      <data key="d0">True</data>
+      <data key="d1">False</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+      <data key="d4">True</data>
+      <data key="d5">True</data>
+      <data key="d6">False</data>
+      <data key="d7">True</data>
+      <data key="d8">True</data>
+      <data key="d9">False</data>
+      <data key="d10">False</data>
+      <data key="d11">True</data>
+      <data key="d12">IL20RB</data>
+    </node>
+    <node id="n4">
+      <data key="d0">True</data>
+      <data key="d1">False</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+      <data key="d4">True</data>
+      <data key="d5">True</data>
+      <data key="d6">False</data>
+      <data key="d7">True</data>
+      <data key="d8">False</data>
+      <data key="d9">False</data>
+      <data key="d10">True</data>
+      <data key="d11">True</data>
+      <data key="d12">VCAM1</data>
+    </node>
+    <node id="n1">
+      <data key="d0">True</data>
+      <data key="d1">False</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+      <data key="d4">True</data>
+      <data key="d5">True</data>
+      <data key="d6">True</data>
+      <data key="d7">True</data>
+      <data key="d8">True</data>
+      <data key="d9">True</data>
+      <data key="d10">True</data>
+      <data key="d11">True</data>
+      <data key="d12">IL20RA</data>
+    </node>
+    <edge source="n4" target="n5700">
+      <data key="d13">NA</data>
+      <data key="d14">NA</data>
+      <data key="d15">NA</data>
+      <data key="d16">NA</data>
+      <data key="d17">directed_stimulation</data>
+      <data key="d18">0.556333333333333</data>
+      <data key="d19">0.447213595499958</data>
+      <data key="d20">0.248799830296477</data>
+    </edge>
+    <edge source="n4" target="n2979">
+      <data key="d13">NA</data>
+      <data key="d14">NA</data>
+      <data key="d15">NA</data>
+      <data key="d16">NA</data>
+      <data key="d17">directed</data>
+      <data key="d18">0.453333333333333</data>
+      <data key="d19">0.0975900072948533</data>
+      <data key="d20">0.0442408033070002</data>
+    </edge>
+    <edge source="n1" target="n0">
+      <data key="d13">NA</data>
+      <data key="d14">NA</data>
+      <data key="d15">NA</data>
+      <data key="d16">NA</data>
+      <data key="d17">complex</data>
+      <data key="d18">0.805</data>
+      <data key="d19">0.447213595499958</data>
+      <data key="d20">0.360006944377466</data>
+    </edge>
+  </graph>
+</graphml>
